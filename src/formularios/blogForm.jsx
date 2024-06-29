@@ -16,7 +16,7 @@ const BlogForm = ({ addBlog }) => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Asegurar que event sea pasado como parámetro
+    event.preventDefault();
     addBlog(newBlog);
     setNewBlog({
       title: '',

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Blog from './component/Blog';
 import Notification from './component/Notification';
 import LogoutButton from './component/LogoutButton';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import './App.css';
-import BlogForm from './formularios/blogForm'; // Ajusta la importación según la ubicación real
-import LoginForm from './formularios/loginForm'; // Ajusta la importación según la ubicación real
-import Togglable from './component/tooglevisible'; // Asegúrate de tener el Togglable.js en la ubicación correcta
+import BlogForm from './formularios/blogForm';
+import LoginForm from './formularios/loginForm';
+import Togglable from './component/tooglevisible';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -22,6 +22,8 @@ const App = () => {
     url: ''
   });
 
+  const blogFormRef = useRef();
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
     if (loggedUserJSON) {
@@ -35,46 +37,43 @@ const App = () => {
   }, []);
 
   const handleLogin = async (event) => {
-    event.preventDefault(); // Asegúrate de que event sea pasado como parámetro
+    event.preventDefault();
   
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
+      const user = await loginService.login({ username, password });
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
       setUsername('');
       setPassword('');
-      setNotificationMessage('Login successful');
+      setNotificationMessage('Inicio de sesión exitoso');
       setIsError(false);
       setTimeout(() => {
         setNotificationMessage(null);
       }, 5000);
     } catch (exception) {
-      setNotificationMessage('Wrong username or password');
+      setNotificationMessage('Usuario o contraseña incorrectos');
       setIsError(true);
       setTimeout(() => {
         setNotificationMessage(null);
       }, 5000);
     }
   };
-  
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser');
     setUser(null);
-    setNotificationMessage('Logged out');
+    setNotificationMessage('Sesión cerrada');
     setTimeout(() => {
       setNotificationMessage(null);
     }, 5000);
   };
 
   const addBlog = async (newBlog) => {
+    blogFormRef.current.toggleVisibility();
     try {
       if (!newBlog.title || !newBlog.author || !newBlog.url) {
-        throw new Error('Title, author, and URL are required');
+        throw new Error('Título, autor y URL son obligatorios');
       }
 
       const newBlogObject = await blogService.create({
@@ -90,13 +89,13 @@ const App = () => {
         author: '',
         url: ''
       });
-      setNotificationMessage(`Blog '${newBlogObject.title}' added successfully`);
+      setNotificationMessage(`Blog '${newBlogObject.title}' añadido exitosamente`);
       setIsError(false);
       setTimeout(() => {
         setNotificationMessage(null);
       }, 5000);
     } catch (exception) {
-      setNotificationMessage('Error adding blog');
+      setNotificationMessage('Error al añadir el blog');
       setIsError(true);
       setTimeout(() => {
         setNotificationMessage(null);
@@ -118,7 +117,7 @@ const App = () => {
       <Notification message={notificationMessage} isError={isError} />
       
       {user === null ? (
-        <Togglable buttonLabel="Login">
+        <Togglable buttonLabel="Iniciar sesión">
           <LoginForm
             handleLogin={handleLogin}
             username={username}
@@ -130,14 +129,16 @@ const App = () => {
       ) : (
         <div>
           <div>
-            <p>{user.name} logged-in</p>
+            <p>{user.name} ha iniciado sesión</p>
             <LogoutButton setUser={setUser} handleLogout={handleLogout} />
           </div>
-          <BlogForm
-            addBlog={addBlog}
-            newBlog={newBlog}
-            handleBlogChange={handleBlogChange}
-          />
+          <Togglable buttonLabel="Nuevo Blog" ref={blogFormRef}>
+            <BlogForm
+              addBlog={addBlog}
+              newBlog={newBlog}
+              handleBlogChange={handleBlogChange}
+            />
+          </Togglable>
         </div>
       )}
 
