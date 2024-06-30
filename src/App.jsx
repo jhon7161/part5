@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Blog from './component/Blog';
 import Notification from './component/Notification';
 import LogoutButton from './component/LogoutButton';
@@ -24,6 +24,8 @@ const App = () => {
   });
 
   const blogFormRef = useRef();
+  const loginTogglableRef = useRef();
+  const signupTogglableRef = useRef();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -132,31 +134,51 @@ const App = () => {
     });
   };
 
+  const handleToggleLogin = () => {
+    loginTogglableRef.current.toggleVisibility();
+    signupTogglableRef.current.hide(); // Oculta el formulario de registro
+  };
+
+  const handleToggleSignup = () => {
+    signupTogglableRef.current.toggleVisibility();
+    loginTogglableRef.current.hide(); // Oculta el formulario de inicio de sesión
+  };
+
   return (
     <div>
       <h1>BLOGS</h1>
       <Notification message={notificationMessage} isError={isError} />
       
-      {user === null ? (
-        <Togglable buttonLabel="Iniciar sesión">
-          <LoginForm
-            handleLogin={handleLogin}
-            username={username}
-            setUsername={setUsername}
-            password={password}
-            setPassword={setPassword}
-          />
-          <SignupForm
-            setNotificationMessage={setNotificationMessage}
-            setIsError={setIsError}
-          />
-        </Togglable>
-      ) : (
-        <div>
+      <div className="auth-buttons">
+        {user === null ? (
+          <>
+            <Togglable buttonLabel="Registrarse" ref={signupTogglableRef}>
+              <SignupForm
+                setNotificationMessage={setNotificationMessage}
+                setIsError={setIsError}
+              />
+            </Togglable>
+
+            <Togglable buttonLabel="Iniciar sesión" ref={loginTogglableRef}>
+              <LoginForm
+                handleLogin={handleLogin}
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+              />
+            </Togglable>
+          </>
+        ) : (
           <div>
             <p>{user.name} ha iniciado sesión</p>
             <LogoutButton setUser={setUser} handleLogout={handleLogout} />
           </div>
+        )}
+      </div>
+
+      {user !== null && (
+        <div>
           <Togglable buttonLabel="Nuevo Blog" ref={blogFormRef}>
             <BlogForm
               addBlog={addBlog}
