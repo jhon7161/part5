@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './component/Blog';
 import Notification from './component/Notification';
 import LogoutButton from './component/LogoutButton';
@@ -8,6 +8,7 @@ import './App.css';
 import BlogForm from './formularios/blogForm';
 import LoginForm from './formularios/loginForm';
 import Togglable from './component/tooglevisible';
+import SignupForm from './formularios/SignupForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -144,6 +145,10 @@ const App = () => {
             setUsername={setUsername}
             password={password}
             setPassword={setPassword}
+          />
+          <SignupForm
+            setNotificationMessage={setNotificationMessage}
+            setIsError={setIsError}
           />
         </Togglable>
       ) : (
