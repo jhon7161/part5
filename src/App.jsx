@@ -69,6 +69,26 @@ const App = () => {
     }, 5000);
   };
 
+  const handleLike = async (blogId) => {
+    try {
+      const blogToUpdate = blogs.find(blog => blog.id === blogId);
+      if (!blogToUpdate) {
+        throw new Error('Blog not found');
+      }
+
+      const updatedBlog = {
+        ...blogToUpdate,
+        likes: blogToUpdate.likes + 1,
+        user: blogToUpdate.user.id // Asegúrate de pasar solo el ID del usuario
+      };
+
+      const returnedBlog = await blogService.updateLikes(blogId, updatedBlog);
+      setBlogs(blogs.map(b => (b.id !== blogId ? b : returnedBlog)));
+    } catch (exception) {
+      console.error('Error updating likes', exception);
+    }
+  };
+
   const addBlog = async (newBlog) => {
     blogFormRef.current.toggleVisibility();
     try {
@@ -82,7 +102,7 @@ const App = () => {
         url: newBlog.url,
       });
 
-      newBlogObject.user = user;
+      newBlogObject.user = user; // Asigna el usuario completo al nuevo blog
       setBlogs(blogs.concat(newBlogObject));
       setNewBlog({
         title: '',
@@ -139,13 +159,20 @@ const App = () => {
               handleBlogChange={handleBlogChange}
             />
           </Togglable>
+
+          <h2>Blogs</h2>
+          {blogs.map(blog => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              setBlogs={setBlogs}
+              blogs={blogs}
+              user={user}
+              handleLike={handleLike}
+            />
+          ))}
         </div>
       )}
-
-      <h2>Blogs</h2>
-      {Array.isArray(blogs) && blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
     </div>
   );
 };
