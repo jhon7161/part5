@@ -30,12 +30,12 @@ const update = async (id, updatedBlog) => {
   return response.data;
 };
 
-const updateLikes = async (id, updatedBlog) => {
+const updateLikes = async (id) => {
   const config = {
     headers: { Authorization: token },
   };
 
-  const response = await axios.put(`${baseUrl}/${id}`, updatedBlog, config);
+  const response = await axios.put(`${baseUrl}/${id}/likes`, {}, config);
   return response.data;
 };
 

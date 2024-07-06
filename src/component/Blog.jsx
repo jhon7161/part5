@@ -9,14 +9,8 @@ const Blog = ({ blog, setBlogs, blogs, user }) => {
   };
 
   const handleLike = async () => {
-    const updatedBlog = {
-      ...blog,
-      likes: blog.likes + 1,
-      user: blog.user.id,
-    };
-
     try {
-      const returnedBlog = await blogService.updateLikes(blog.id, updatedBlog);
+      const returnedBlog = await blogService.updateLikes(blog.id);
       setBlogs(blogs.map(b => (b.id !== blog.id ? b : returnedBlog)));
     } catch (exception) {
       console.error('Error updating likes', exception);
