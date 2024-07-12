@@ -1,62 +1,47 @@
-import React, { useState } from 'react';
-import blogService from '../services/blogs';
-
-const Blog = ({ blog, setBlogs, blogs, user }) => {
-  const [showDetails, setShowDetails] = useState(false);
-
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+const Blog = ({ blog, setBlogs, blogs, user, handleLike, handleDelete }) => {
+  const [showDetails, setShowDetails] = useState(false)
   const toggleDetails = () => {
-    setShowDetails(!showDetails);
-  };
-
-  const handleLike = async () => {
-    try {
-      const returnedBlog = await blogService.updateLikes(blog.id);
-      setBlogs(blogs.map(b => (b.id !== blog.id ? b : returnedBlog)));
-    } catch (exception) {
-      console.error('Error updating likes', exception);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete the blog '${blog.title}'?`)) {
-      try {
-        await blogService.deleteBlog(blog.id);
-        setBlogs(blogs.filter(b => b.id !== blog.id));
-      } catch (exception) {
-        console.error('Error deleting blog', exception);
-      }
-    }
-  };
-
+    setShowDetails(!showDetails)
+  }
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5,
-  };
-
+    marginBottom: 5
+  }
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title} {blog.author} <button onClick={toggleDetails}>{showDetails ? 'Hide' : 'Show'} details</button>
+        {blog.title} {blog.author}
+        <button type="button" onClick={toggleDetails}>
+          {showDetails ? 'hide' : 'view'}
+        </button>
       </div>
       {showDetails && (
         <div>
-          <p>{blog.url}</p>
-          <p>
-            {blog.likes} likes <button onClick={handleLike}>like</button>
-          </p>
-          <p>Added by {blog.user.name}</p>
-
-          {/* Mostrar botón de eliminar solo si el usuario actual es el creador del blog */}
-          {user && blog.user.id === user.id && (
-            <button onClick={handleDelete}>Delete</button>
+          <div>{blog.url}</div>
+          <div>
+            likes {blog.likes}{' '}
+            <button type="button" onClick={() => handleLike(blog.id)}>like</button>
+          </div>
+          <div>{blog.user.name}</div>
+          {user && user.username === blog.user.username && (
+            <button type="button" onClick={() => handleDelete(blog.id)}>delete</button>
           )}
         </div>
       )}
     </div>
-  );
-};
-
-export default Blog;
+  )
+}
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  setBlogs: PropTypes.func.isRequired,
+  blogs: PropTypes.array.isRequired,
+  user: PropTypes.object,
+  handleLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired
+}
+export default Blog

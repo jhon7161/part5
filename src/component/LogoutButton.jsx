@@ -1,13 +1,13 @@
 // LogoutButton.js
-import React from 'react';
+import React from 'react'
 
 const LogoutButton = ({ setUser }) => {
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser');
-    setUser(null);
-  };
+    window.localStorage.removeItem('loggedBlogAppUser')
+    setUser(null)
+  }
 
-  return <button onClick={handleLogout}>Logout</button>;
-};
+  return <button onClick={handleLogout}>Logout</button>
+}
 
-export default LogoutButton;
+export default LogoutButton

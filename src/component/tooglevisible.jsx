@@ -1,4 +1,5 @@
-import { useState, useImperativeHandle, forwardRef } from 'react'
+import React, { useState, useImperativeHandle, forwardRef } from 'react'
+import PropTypes from 'prop-types'
 
 const Togglable = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
@@ -10,11 +11,9 @@ const Togglable = forwardRef((props, ref) => {
     setVisible(!visible)
   }
 
-  useImperativeHandle(ref, () => {
-    return {
-      toggleVisibility
-    }
-  })
+  useImperativeHandle(ref, () => ({
+    toggleVisibility,
+  }))
 
   return (
     <div>
@@ -22,12 +21,23 @@ const Togglable = forwardRef((props, ref) => {
         <button onClick={toggleVisibility}>{props.buttonLabel}</button>
       </div>
       <div style={showWhenVisible}>
-
         {props.children}
         <button onClick={toggleVisibility}>cancel</button>
       </div>
     </div>
   )
 })
+
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired,
+  children: PropTypes.node,
+}
+
+Togglable.defaultProps = {
+  buttonLabel: 'Show',
+}
+
+// Añadir displayName para el componente
+Togglable.displayName = 'Togglable'
 
 export default Togglable

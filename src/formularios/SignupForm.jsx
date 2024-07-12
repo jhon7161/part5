@@ -1,27 +1,27 @@
 // SignupForm.js
-import React, { useState } from 'react';
-import loginService from '../services/login';
+import React, { useState } from 'react'
+import loginService from '../services/login'
 
 const SignupForm = ({ setNotificationMessage, setIsError }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
 
   const handleSignup = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
-      const newUser = await loginService.signup({ username, password, name });
-      setNotificationMessage('Usuario creado exitosamente. Por favor, inicia sesión.');
-      setIsError(false);
-      setUsername('');
-      setPassword('');
-      setName('');
+      const newUser = await loginService.signup({ username, password, name })
+      setNotificationMessage('Usuario creado exitosamente. Por favor, inicia sesión.')
+      setIsError(false)
+      setUsername('')
+      setPassword('')
+      setName('')
     } catch (exception) {
-      setNotificationMessage('Error al crear el usuario');
-      setIsError(true);
+      setNotificationMessage('Error al crear el usuario')
+      setIsError(true)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSignup}>
@@ -51,7 +51,7 @@ const SignupForm = ({ setNotificationMessage, setIsError }) => {
       </div>
       <button type="submit">Registrarse</button>
     </form>
-  );
-};
+  )
+}
 
-export default SignupForm;
+export default SignupForm

@@ -1,29 +1,29 @@
-import React from 'react';
+import React from 'react'
 
 const BlogForm = ({ addBlog }) => {
   const [newBlog, setNewBlog] = React.useState({
     title: '',
     author: '',
     url: ''
-  });
+  })
 
   const handleBlogChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     setNewBlog({
       ...newBlog,
       [name]: value
-    });
-  };
+    })
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    addBlog(newBlog);
+    event.preventDefault()
+    addBlog(newBlog)
     setNewBlog({
       title: '',
       author: '',
       url: ''
-    });
-  };
+    })
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -56,7 +56,7 @@ const BlogForm = ({ addBlog }) => {
       </div>
       <button type="submit">Save Blog</button>
     </form>
-  );
-};
+  )
+}
 
-export default BlogForm;
+export default BlogForm
