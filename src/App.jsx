@@ -108,6 +108,14 @@ const App = () => {
       }
     }
   };
+  const updateBlog = async (id, updatedBlog) => {
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog);
+      setBlogs(blogs.map(b => (b.id !== id ? b : returnedBlog)));
+    } catch (exception) {
+      console.error('Error updating blog', exception);
+    }
+  };
 
   const addBlog = async (newBlog) => {
     blogFormRef.current.toggleVisibility();
@@ -216,6 +224,7 @@ const App = () => {
               user={user}
               handleLike={handleLike}
               handleDelete={handleDelete}
+              updateBlog={updateBlog}
               data-testid={`blog-${blog.id}`}
             />
           ))}

@@ -1,19 +1,37 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import EditBlogForm from '../formularios/EditBlogForm';
 
-const Blog = ({ blog, setBlogs, blogs, user, handleLike, handleDelete }) => {
-  const [showDetails, setShowDetails] = useState(false)
+const Blog = ({ blog, setBlogs, blogs, user, handleLike, handleDelete, updateBlog }) => {
+  const [showDetails, setShowDetails] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+
   const toggleDetails = () => {
-    setShowDetails(!showDetails)
-  }
+    setShowDetails(!showDetails);
+  };
+
+  const toggleEditForm = () => {
+    setShowEditForm(!showEditForm);
+  };
+
+  const handleUpdateBlog = async (id, updatedBlog) => {
+    try {
+      await updateBlog(id, updatedBlog);
+      const updatedBlogs = blogs.map(b => (b.id === id ? { ...b, ...updatedBlog } : b));
+      setBlogs(updatedBlogs);
+      setShowEditForm(false); // Hide the edit form after saving
+    } catch (exception) {
+      console.error('Error updating blog', exception);
+    }
+  };
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5
-  }
+    marginBottom: 5,
+  };
 
   return (
     <div style={blogStyle} data-testid={`blog-${blog.id}`}>
@@ -41,20 +59,36 @@ const Blog = ({ blog, setBlogs, blogs, user, handleLike, handleDelete }) => {
             </button>
           </div>
           <div>{blog.user.name}</div>
-          {user && user.username === blog.user.username && (
-            <button
-              type="button"
-              onClick={() => handleDelete(blog.id)}
-              data-testid={`delete-button-${blog.id}`}
-            >
-              delete
-            </button>
+          {user && user.username === blog.user.username && !showEditForm && (
+            <div>
+              <button
+                type="button"
+                onClick={toggleEditForm}
+                data-testid={`edit-button-${blog.id}`}
+              >
+                edit
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(blog.id)}
+                data-testid={`delete-button-${blog.id}`}
+              >
+                delete
+              </button>
+            </div>
           )}
         </div>
       )}
+      {showEditForm && (
+        <EditBlogForm
+          blog={blog}
+          updateBlog={handleUpdateBlog}
+          toggleEditForm={toggleEditForm}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
@@ -62,7 +96,8 @@ Blog.propTypes = {
   blogs: PropTypes.array.isRequired,
   user: PropTypes.object,
   handleLike: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired
-}
+  handleDelete: PropTypes.func.isRequired,
+  updateBlog: PropTypes.func.isRequired,
+};
 
-export default Blog
+export default Blog;
