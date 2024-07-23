@@ -9,159 +9,157 @@ import BlogForm from './formularios/blogForm'
 import LoginForm from './formularios/loginForm'
 import Togglable from './component/tooglevisible'
 import SignupForm from './formularios/SignupForm'
-
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [isError, setIsError] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([]);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [isError, setIsError] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
     url: ''
-  })
+  });
 
-  const blogFormRef = useRef()
-  const loginTogglableRef = useRef()
-  const signupTogglableRef = useRef()
+  const blogFormRef = useRef();
+  const loginTogglableRef = useRef();
+  const signupTogglableRef = useRef();
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
     }
     blogService.getAll().then(initialBlogs => {
-      setBlogs(initialBlogs)
-    })
-  }, [])
+      setBlogs(initialBlogs);
+    });
+  }, []);
 
   const handleLogin = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     try {
-      const user = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      setNotificationMessage('Inicio de sesión exitoso')
-      setIsError(false)
+      const user = await loginService.login({ username, password });
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
+      blogService.setToken(user.token);
+      setUser(user);
+      setUsername('');
+      setPassword('');
+      setNotificationMessage('Inicio de sesión exitoso');
+      setIsError(false);
       setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+        setNotificationMessage(null);
+      }, 5000);
     } catch (exception) {
-      setNotificationMessage('Usuario o contraseña incorrectos')
-      setIsError(true)
+      setNotificationMessage('Usuario o contraseña incorrectos');
+      setIsError(true);
       setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+        setNotificationMessage(null);
+      }, 5000);
     }
-  }
+  };
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser')
-    setUser(null)
-    setNotificationMessage('Sesión cerrada')
+    window.localStorage.removeItem('loggedBlogAppUser');
+    setUser(null);
+    setNotificationMessage('Sesión cerrada');
     setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
-  }
+      setNotificationMessage(null);
+    }, 5000);
+  };
 
   const handleLike = async (blogId) => {
     try {
-      const blogToUpdate = blogs.find(blog => blog.id === blogId)
+      const blogToUpdate = blogs.find(blog => blog.id === blogId);
       if (!blogToUpdate) {
-        throw new Error('Blog not found')
+        throw new Error('Blog not found');
       }
 
       const updatedBlog = {
         ...blogToUpdate,
         likes: blogToUpdate.likes + 1,
-        user: blogToUpdate.user.id // Asegúrate de pasar solo el ID del usuario
-      }
+      };
 
-      const returnedBlog = await blogService.updateLikes(blogId)
-      setBlogs(blogs.map(b => (b.id !== blogId ? b : returnedBlog)))
+      const returnedBlog = await blogService.updateLikes(blogId);
+      setBlogs(blogs.map(b => (b.id !== blogId ? b : returnedBlog)));
     } catch (exception) {
-      console.error('Error updating likes', exception)
+      console.error('Error updating likes', exception);
     }
-  }
+  };
 
   const handleDelete = async (blogId) => {
     if (window.confirm('Are you sure you want to delete the blog?')) {
       try {
-        await blogService.deleteBlog(blogId)
-        setBlogs(blogs.filter(b => b.id !== blogId))
-        setNotificationMessage('Blog eliminado exitosamente')
-        setIsError(false)
+        await blogService.deleteBlog(blogId);
+        setBlogs(blogs.filter(b => b.id !== blogId));
+        setNotificationMessage('Blog eliminado exitosamente');
+        setIsError(false);
         setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
+          setNotificationMessage(null);
+        }, 5000);
       } catch (exception) {
-        setNotificationMessage('Error al eliminar el blog')
-        setIsError(true)
+        setNotificationMessage('Error al eliminar el blog');
+        setIsError(true);
         setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
+          setNotificationMessage(null);
+        }, 5000);
       }
     }
-  }
+  };
 
   const addBlog = async (newBlog) => {
-    blogFormRef.current.toggleVisibility()
+    blogFormRef.current.toggleVisibility();
     try {
       if (!newBlog.title || !newBlog.author || !newBlog.url) {
-        throw new Error('Título, autor y URL son obligatorios')
+        throw new Error('Título, autor y URL son obligatorios');
       }
 
       const newBlogObject = await blogService.create({
         title: newBlog.title,
         author: newBlog.author,
         url: newBlog.url,
-      })
+      });
 
-      newBlogObject.user = user// Asigna el usuario completo al nuevo blog
-      setBlogs(blogs.concat(newBlogObject))
+      newBlogObject.user = user; // Asigna el usuario completo al nuevo blog
+      setBlogs(blogs.concat(newBlogObject));
       setNewBlog({
         title: '',
         author: '',
         url: ''
-      })
-      setNotificationMessage(`Blog '${newBlogObject.title}' añadido exitosamente`)
-      setIsError(false)
+      });
+      setNotificationMessage(`Blog '${newBlogObject.title}' añadido exitosamente`);
+      setIsError(false);
       setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+        setNotificationMessage(null);
+      }, 5000);
     } catch (exception) {
-      setNotificationMessage('Error al añadir el blog')
-      setIsError(true)
+      setNotificationMessage('Error al añadir el blog');
+      setIsError(true);
       setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+        setNotificationMessage(null);
+      }, 5000);
     }
-  }
+  };
 
   const handleBlogChange = (event) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setNewBlog({
       ...newBlog,
       [name]: value
-    })
-  }
+    });
+  };
 
   const handleToggleLogin = () => {
-    loginTogglableRef.current.toggleVisibility()
-    signupTogglableRef.current.hide() // Oculta el formulario de registro
-  }
+    loginTogglableRef.current.toggleVisibility();
+    signupTogglableRef.current.hide(); // Oculta el formulario de registro
+  };
 
   const handleToggleSignup = () => {
-    signupTogglableRef.current.toggleVisibility()
-    loginTogglableRef.current.hide() // Oculta el formulario de inicio de sesión
-  }
+    signupTogglableRef.current.toggleVisibility();
+    loginTogglableRef.current.hide(); // Oculta el formulario de inicio de sesión
+  };
 
   return (
     <div>
@@ -174,6 +172,7 @@ const App = () => {
               <SignupForm
                 setNotificationMessage={setNotificationMessage}
                 setIsError={setIsError}
+                data-testid="signup-form"
               />
             </Togglable>
 
@@ -184,6 +183,7 @@ const App = () => {
                 setUsername={setUsername}
                 password={password}
                 setPassword={setPassword}
+                data-testid="login-form"
               />
             </Togglable>
           </>
@@ -202,6 +202,7 @@ const App = () => {
               addBlog={addBlog}
               newBlog={newBlog}
               handleBlogChange={handleBlogChange}
+              data-testid="blog-form"
             />
           </Togglable>
 
@@ -215,12 +216,13 @@ const App = () => {
               user={user}
               handleLike={handleLike}
               handleDelete={handleDelete}
+              data-testid={`blog-${blog.id}`}
             />
           ))}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

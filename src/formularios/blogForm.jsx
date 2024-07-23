@@ -34,6 +34,7 @@ const BlogForm = ({ addBlog }) => {
           name="title"
           value={newBlog.title}
           onChange={handleBlogChange}
+          data-testid="title"
         />
       </div>
       <div>
@@ -43,6 +44,7 @@ const BlogForm = ({ addBlog }) => {
           name="author"
           value={newBlog.author}
           onChange={handleBlogChange}
+          data-testid="author"
         />
       </div>
       <div>
@@ -52,11 +54,11 @@ const BlogForm = ({ addBlog }) => {
           name="url"
           value={newBlog.url}
           onChange={handleBlogChange}
+          data-testid="url"
         />
       </div>
-      <button type="submit">Save Blog</button>
+      <button type="submit" data-testid="submit-button">Save Blog</button>
     </form>
   )
 }
-
 export default BlogForm

@@ -22,6 +22,7 @@ const LoginForm = ({ handleLogin, username, setUsername, password, setPassword }
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
+          data-testid="username"
         />
       </div>
       <div>
@@ -32,9 +33,10 @@ const LoginForm = ({ handleLogin, username, setUsername, password, setPassword }
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
+          data-testid="password"
         />
       </div>
-      <button type="submit">login</button>
+      <button type="submit" data-testid="login-button">login</button>
     </form>
   )
 }
