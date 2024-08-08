@@ -9,6 +9,7 @@ import BlogForm from './formularios/blogForm'
 import LoginForm from './formularios/loginForm'
 import Togglable from './component/tooglevisible'
 import SignupForm from './formularios/SignupForm'
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [notificationMessage, setNotificationMessage] = useState(null);
@@ -34,7 +35,8 @@ const App = () => {
       blogService.setToken(user.token);
     }
     blogService.getAll().then(initialBlogs => {
-      setBlogs(initialBlogs);
+      const sortedBlogs = initialBlogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedBlogs);
     });
   }, []);
 
@@ -83,7 +85,10 @@ const App = () => {
       };
 
       const returnedBlog = await blogService.updateLikes(blogId);
-      setBlogs(blogs.map(b => (b.id !== blogId ? b : returnedBlog)));
+      const updatedBlogs = blogs
+        .map(b => (b.id !== blogId ? b : returnedBlog))
+        .sort((a, b) => b.likes - a.likes);
+      setBlogs(updatedBlogs);
     } catch (exception) {
       console.error('Error updating likes', exception);
     }
@@ -93,7 +98,8 @@ const App = () => {
     if (window.confirm('Are you sure you want to delete the blog?')) {
       try {
         await blogService.deleteBlog(blogId);
-        setBlogs(blogs.filter(b => b.id !== blogId));
+        const updatedBlogs = blogs.filter(b => b.id !== blogId);
+        setBlogs(updatedBlogs);
         setNotificationMessage('Blog eliminado exitosamente');
         setIsError(false);
         setTimeout(() => {
@@ -108,10 +114,14 @@ const App = () => {
       }
     }
   };
+
   const updateBlog = async (id, updatedBlog) => {
     try {
       const returnedBlog = await blogService.update(id, updatedBlog);
-      setBlogs(blogs.map(b => (b.id !== id ? b : returnedBlog)));
+      const updatedBlogs = blogs
+        .map(b => (b.id !== id ? b : returnedBlog))
+        .sort((a, b) => b.likes - a.likes);
+      setBlogs(updatedBlogs);
     } catch (exception) {
       console.error('Error updating blog', exception);
     }
@@ -131,7 +141,8 @@ const App = () => {
       });
 
       newBlogObject.user = user; // Asigna el usuario completo al nuevo blog
-      setBlogs(blogs.concat(newBlogObject));
+      const updatedBlogs = blogs.concat(newBlogObject).sort((a, b) => b.likes - a.likes);
+      setBlogs(updatedBlogs);
       setNewBlog({
         title: '',
         author: '',
